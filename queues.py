@@ -98,14 +98,13 @@ class Deque:
 
 
 def is_palindrome(text):
+   
+    letters = Deque()
+    for ch in text:
+        if ch.isalpha():
+            letters.add_rear(ch.lower())
 
-    deque = Deque()
-    for char in text:
-        if char.isalpha():
-            deque.add_rear(char.lower())
-
-    while deque.size() > 1:
-        if deque.remove_front() != deque.remove_rear():
+    while letters.size() > 1:
+        if letters.remove_front() != letters.remove_rear():
             return False
-
     return True
