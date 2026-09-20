@@ -31,19 +31,22 @@ def infix_to_postfix(expression, trace=None):
     operators = ArrayStack()
     for token in tokenize(expression):
         if token in PRECEDENCE:
-            while (not operators.is_empty() 
-            and operators.peek() != "(" 
-                and (PRECEDENCE[operators.peek()] > PRECEDENCE[token] 
+            while(not operators.is_empty() 
+                    and operators.peek() != "(" 
+                    and (PRECEDENCE[operators.peek()] > PRECEDENCE[token] 
                     or (PRECEDENCE[operators.peek()] == PRECEDENCE[token] 
                         and token not in RIGHT_ASSOCIATIVE))):
                 output.append(operators.pop())
             operators.push(token)
             action = "push operator"
         elif token == "(":
+            operators.push(token)
+            action = "push ("
+        elif token == ")":
             while not operators.is_empty() and operators.peek() != "(":
                 output.append(operators.pop())
             if operators.is_empty():
-                raise ValueError("Unbalanced parenthesis no matching (")
+                raise ValueError("Unbalanced parenthesis: missing '('")
             operators.pop()
             action = "pop  to ("
         else:
@@ -53,33 +56,14 @@ def infix_to_postfix(expression, trace=None):
         if trace is not None:
             trace.append((token, action, " ".join(output), "".join(operators._items)))
     while not operators.is_empty(): 
-        if operators.peek() in "(":
+        if operators.peek() == "(":
             raise ValueError("error")
         output.append(operators.pop())
     if trace is not None:
         trace.append(("end", "pop all", "".join(output)," ".join(operators._items)))
-        return "".join(output )
+    return " ".join(output )
         
-        
-        """Step 1. Convert infix to postfix. Return a space-separated string.
-
-    Walk the tokens once. For each token, exactly one of these applies:
-
-      operand      append it to the output, immediately
-      operator     while the operator on top of the stack is not "(" and
-                   outranks this one, pop it to the output. Then push this
-                   one. An operator of EQUAL precedence also gets popped,
-                   unless this operator is right associative.
-      "("          push it. It is a fence, not an operator.
-      ")"          pop to the output until "(" is on top, then discard the
-                   "(". If the stack empties first, the parentheses are
-                   unbalanced: raise ValueError.
-
-    After the last token, pop whatever is left to the output. If a "(" comes
-    off during that drain, the parentheses are unbalanced: raise ValueError.
-
-    Return " ".join(output).
-    """
+ 
     raise NotImplementedError("Step 1: implement the Shunting Yard algorithm")
 
 
@@ -92,9 +76,11 @@ def evaluate_postfix(expression, trace=None):
             right = values.pop()
             left = values.pop()
             _fmt = format
-            values.push_(f"apply{token}, {left}, {right}")
+            result = apply_operator(token, left, right)
+            values.push(result)
         else:
             values.push(float(token))
+
         if trace is not None:
             trace.append((token, " ".join(_fmt(v) for v in values._items)))
     if values.size() != 1:

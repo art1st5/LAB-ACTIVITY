@@ -16,14 +16,7 @@ The queue holds a fixed number of slots. It does not grow.
 class CircularQueue:
 
     def __init__(self, capacity):
-        """Step 1. A list of `capacity` Nones, a front index, and a count.
-
-        Raise ValueError if capacity is less than 1.
-
-        Keep a COUNT, not a rear index alone. With only front and rear you
-        cannot tell a full queue from an empty one: both give front == rear.
-        A count answers both questions with no ambiguity.
-        """
+     
         if capacity < 1:
             raise ValueError("capacity must be atleast 1 ")
         self._items = [None] * capacity
@@ -32,12 +25,7 @@ class CircularQueue:
         self._count = 0
 
     def enqueue(self, item):
-        """Step 2. Add at the rear. Raise OverflowError when full.
-
-        You are not storing a rear index, so compute it:
-            rear = (front + count) % capacity
-        Write the item there, then increase the count.
-        """
+   
         if self.is_full():
             raise OverflowError("enqueue on a full queue")
         rear = (self._front + self._count) % self._capacity
@@ -45,11 +33,7 @@ class CircularQueue:
         self._count += 1
 
     def dequeue(self):
-        """Step 3. Remove and return the front item. IndexError when empty.
-
-        Read the item at front, clear that slot to None so nothing stale is
-        left behind, advance front with modulo, decrease the count, return.
-        """
+     
         if self.is_empty():
             raise IndexError("dequeue from an empty queue")
         item = self._items[self._front]
@@ -59,29 +43,21 @@ class CircularQueue:
         return item
 
     def peek(self):
-        """Step 4. Return the front item without removing it. IndexError when empty."""
         if self.is_empty():
             raise IndexError("peek from an empty queue")
         return self._items[self._front]
 
     def is_empty(self):
-        """Step 5. True when the count is zero."""
         return self._count == 0
 
     def is_full(self):
-        """Step 6. True when the count has reached the capacity."""
         return self._count == self._capacity
 
     def size(self):
-        """Step 7. Return the count."""
         return self._count
 
     def slots(self):
-        """Written for you. Returns a copy of the raw list.
-
-        For inspecting wraparound during the demonstration. Not part of the
-        ADT, and your other methods must never call it.
-        """
+       
         return list(self._items)
 
 
@@ -122,13 +98,7 @@ class Deque:
 
 
 def is_palindrome(text):
-    """Step 15. True when text reads the same both ways.
 
-    Ignore anything that is not a letter, and ignore case. Load the letters
-    into a Deque, then compare front against rear until one or zero letters
-    remain. A word of odd length ends with one letter in the middle, which
-    always matches itself, so stop while size is greater than 1.
-    """
     deque = Deque()
     for char in text:
         if char.isalpha():
